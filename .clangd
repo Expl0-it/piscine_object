@@ -1,0 +1,12 @@
+Diagnostics:
+  UnusedIncludes: None #Strict
+  MissingIncludes: None
+CompileFlags:
+  Add: [
+      #-I/home/expl0it/Documents/42/piscine_object/artifact,
+      -Wall,
+      -Wextra,
+      -Werror,
+      -std=c++98,
+    ]
+  Compiler: c++
