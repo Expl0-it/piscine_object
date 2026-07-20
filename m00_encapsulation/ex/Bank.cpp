@@ -6,6 +6,8 @@
 
 size_t Bank::acc_id = 0;
 
+// constructors / destructors
+
 Bank::Bank() : m_liquidity(0) {}
 
 Bank::Bank(int liquidity) : m_liquidity(liquidity) {}
@@ -39,6 +41,18 @@ Bank::~Bank() {
   }
   this->m_acc_map.clear();
 }
+
+// getters / setters
+
+const int &Bank::getLiquidity() const { return (m_liquidity); }
+
+void Bank::setLiquidity(int override) { m_liquidity = override; }
+
+void Bank::updateLiquidity(int toAdd) { m_liquidity += toAdd; }
+
+// account management
+
+// ostream override
 
 std::ostream &operator<<(std::ostream &p_os, const Bank &p_bank) {
   p_os << "Bank informations : " << std::endl;

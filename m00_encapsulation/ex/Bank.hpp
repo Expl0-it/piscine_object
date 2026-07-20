@@ -23,6 +23,15 @@ public:
   void setLiquidity(int);
   void updateLiquidity(int);
 
+  int createAccount(int initialAmount);
+  void closeAccount(int id);
+  void depositToAccount(int id);
+  void withdrawFromAccount(int id);
+
+  void loanToAccount(int id, int loanAmount);
+
+  const Account &operator[](size_t);
+
   friend std::ostream &operator<<(std::ostream &p_os,
                                   const Bank::Account &p_account);
   friend std::ostream &operator<<(std::ostream &p_os, const Bank &p_bank);
