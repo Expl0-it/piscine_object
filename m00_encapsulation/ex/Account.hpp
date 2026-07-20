@@ -1,22 +1,19 @@
 #pragma once
 
+#include "Bank.hpp"
 #include <iostream>
 #include <vector>
 
-class Bank;
-
-class Account
+class Bank::Account
 {
   private:
 	int m_id;
 	int m_value;
-
 	Account(int id);
-
-	friend class Bank;
 
   public:
 	const int &getId() const;
 	const int &getValue() const;
-	friend std::ostream &operator<<(std::ostream &p_os, const Account &p_account);
 };
+
+std::ostream &operator<<(std::ostream &p_os, const Bank::Account &p_account);
