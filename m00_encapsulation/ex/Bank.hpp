@@ -3,14 +3,17 @@
 #include <cstddef>
 #include <iostream>
 #include <map>
+#include <stdexcept>
 #include <vector>
 
 class Bank {
 private:
-  int m_liquidity;
   class Account;
-  std::map<int, Account *> m_acc_map;
+
   static size_t acc_id;
+
+  int m_liquidity;
+  std::map<int, Account *> m_acc_map;
 
 public:
   Bank();
@@ -21,12 +24,12 @@ public:
 
   const int &getLiquidity() const;
   void setLiquidity(int);
-  void updateLiquidity(int);
+  void addLiquidity(int);
 
-  int createAccount(int initialAmount);
+  int createAccount();
   void closeAccount(int id);
-  void depositToAccount(int id);
-  void withdrawFromAccount(int id);
+  void depositToAccount(int id, int amount);
+  void withdrawFromAccount(int id, int amount);
 
   void loanToAccount(int id, int loanAmount);
 

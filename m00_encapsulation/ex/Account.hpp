@@ -2,7 +2,6 @@
 
 #include "Bank.hpp"
 #include <iostream>
-#include <vector>
 
 class Bank::Account {
 private:
@@ -10,6 +9,8 @@ private:
   int m_value;
 
   Account(int id);
+
+  friend class Bank;
 
 public:
   const int &getId() const;

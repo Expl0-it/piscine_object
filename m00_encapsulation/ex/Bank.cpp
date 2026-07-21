@@ -2,6 +2,7 @@
 #include "Account.hpp"
 #include <cstddef>
 #include <map>
+#include <stdexcept>
 #include <utility>
 
 size_t Bank::acc_id = 0;
@@ -48,9 +49,37 @@ const int &Bank::getLiquidity() const { return (m_liquidity); }
 
 void Bank::setLiquidity(int override) { m_liquidity = override; }
 
-void Bank::updateLiquidity(int toAdd) { m_liquidity += toAdd; }
+void Bank::addLiquidity(int toAdd) { m_liquidity += toAdd; }
 
 // account management
+
+// TODO: check all of this logic when i am feeling more alive than now
+int Bank::createAccount() {
+  this->m_acc_map.insert(
+      std::pair<int, Account *>(acc_id, new Account(acc_id)));
+
+  acc_id++;
+  return (acc_id - 1);
+}
+
+void Bank::closeAccount(int id) {
+  if (this->m_acc_map.at(id)->m_value != 0)
+    throw std::invalid_argument(
+        "An account with balance different than zero cannot be closed.");
+  this->m_acc_map.erase(id);
+}
+
+void Bank::depositToAccount(int id, int amount) {
+  if (amount < 0)
+    throw std::invalid_argument("Amount cannot be lesser than zero.");
+
+  int fee = 0.05 * amount;
+  amount -= fee;
+  this->m_liquidity += fee;
+  this->m_acc_map.at(id)->m_value += amount;
+}
+
+void Bank::withdrawFromAccount(int id, int amount);
 
 // ostream override
 
