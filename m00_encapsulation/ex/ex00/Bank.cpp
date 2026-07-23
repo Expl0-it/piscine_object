@@ -101,7 +101,7 @@ void Bank::withdrawFromAccount(size_t id, int amount) {
   if (amount > this->m_acc_map.at(id)->getBalance())
     throw std::invalid_argument(
         "Withdrawal amount cannot be greater than account's balance");
-  this->accountChangeBalance(id, amount);
+  this->accountChangeBalance(id, -amount);
 }
 
 // loan logic
