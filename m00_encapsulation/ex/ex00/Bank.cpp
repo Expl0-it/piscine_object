@@ -28,9 +28,10 @@ Bank &Bank::operator=(const Bank &other) {
   for (std::map<size_t, Bank::Account *>::const_iterator it =
            other.m_acc_map.begin();
        it != other.m_acc_map.end(); it++) {
-    this->m_acc_map.insert(std::pair<int, Bank::Account *>(
+    this->m_acc_map.insert(std::pair<size_t, Bank::Account *>(
         it->first, new Bank::Account(*(it->second))));
   }
+  this->acc_id = other.acc_id;
   return (*this);
 }
 
@@ -58,7 +59,7 @@ void Bank::addLiquidity(int toAdd) { m_liquidity += toAdd; }
 // TODO: check all of this logic when i am feeling more alive than now
 int Bank::createAccount() {
   this->m_acc_map.insert(
-      std::pair<int, Bank::Account *>(acc_id, new Bank::Account(acc_id)));
+      std::pair<size_t, Bank::Account *>(acc_id, new Bank::Account(acc_id)));
 
   acc_id++;
   return (acc_id - 1);
