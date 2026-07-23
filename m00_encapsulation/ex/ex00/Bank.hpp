@@ -10,10 +10,16 @@ class Bank {
 private:
   class Account;
 
-  static size_t acc_id;
+  size_t account_id;
 
   int m_liquidity;
   std::map<size_t, Bank::Account *> m_acc_map;
+
+  void setLiquidity(int);
+  void changeLiquidity(int);
+
+  void accountChangeDebt(size_t, int);
+  void accountChangeBalance(size_t, int);
 
 public:
   Bank();
@@ -23,8 +29,6 @@ public:
   ~Bank();
 
   const int &getLiquidity() const;
-  void setLiquidity(int);
-  void addLiquidity(int);
 
   int createAccount();
   void closeAccount(size_t id);

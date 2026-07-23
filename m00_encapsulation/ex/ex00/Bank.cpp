@@ -2,17 +2,16 @@
 #include "Account.hpp"
 #include <cstddef>
 #include <cstdlib>
+#include <exception>
 #include <map>
 #include <stdexcept>
 #include <utility>
 
-size_t Bank::acc_id = 0;
-
 // constructors / destructors
 
-Bank::Bank() : m_liquidity(0) {}
+Bank::Bank() : account_id(0), m_liquidity(0) {}
 
-Bank::Bank(int liquidity) : m_liquidity(liquidity) {}
+Bank::Bank(int liquidity) : account_id(0), m_liquidity(liquidity) {}
 
 Bank &Bank::operator=(const Bank &other) {
   if (this == &other)
@@ -24,14 +23,14 @@ Bank &Bank::operator=(const Bank &other) {
   }
   this->m_acc_map.clear();
 
-  this->m_liquidity = other.m_liquidity;
+  this->setLiquidity(other.m_liquidity);
   for (std::map<size_t, Bank::Account *>::const_iterator it =
            other.m_acc_map.begin();
        it != other.m_acc_map.end(); it++) {
     this->m_acc_map.insert(std::pair<size_t, Bank::Account *>(
         it->first, new Bank::Account(*(it->second))));
   }
-  this->acc_id = other.acc_id;
+  this->account_id = other.account_id;
   return (*this);
 }
 
@@ -52,23 +51,34 @@ const int &Bank::getLiquidity() const { return (m_liquidity); }
 
 void Bank::setLiquidity(int override) { m_liquidity = override; }
 
-void Bank::addLiquidity(int toAdd) { m_liquidity += toAdd; }
+void Bank::changeLiquidity(int toAdd) { m_liquidity += toAdd; }
 
 // account management
 
+void Bank::accountChangeDebt(size_t id, int amount) {
+  this->m_acc_map.at(id)->m_debt += amount;
+}
+
+void Bank::accountChangeBalance(size_t id, int amount) {
+  this->m_acc_map.at(id)->m_balance += amount;
+}
+
 // TODO: check all of this logic when i am feeling more alive than now
 int Bank::createAccount() {
-  this->m_acc_map.insert(
-      std::pair<size_t, Bank::Account *>(acc_id, new Bank::Account(acc_id)));
+  this->m_acc_map.insert(std::pair<size_t, Bank::Account *>(
+      account_id, new Bank::Account(account_id)));
 
-  acc_id++;
-  return (acc_id - 1);
+  account_id++;
+  return (account_id - 1);
 }
 
 void Bank::closeAccount(size_t id) {
   if (this->m_acc_map.at(id)->m_balance != 0)
     throw std::invalid_argument(
         "An account with balance different than zero cannot be closed.");
+  if (this->m_acc_map.at(id)->m_debt != 0)
+    throw std::invalid_argument(
+        "An account with debt different than zero cannot be closed");
   if (this->m_acc_map.at(id))
     delete this->m_acc_map.at(id);
   this->m_acc_map.erase(id);
@@ -80,8 +90,8 @@ void Bank::depositToAccount(size_t id, int amount) {
 
   int fee = 0.05 * amount;
   amount -= fee;
-  this->m_liquidity += fee;
-  this->m_acc_map.at(id)->m_balance += amount;
+  this->changeLiquidity(fee);
+  this->accountChangeBalance(id, amount);
 }
 
 void Bank::withdrawFromAccount(size_t id, int amount) {
@@ -91,7 +101,7 @@ void Bank::withdrawFromAccount(size_t id, int amount) {
   if (amount > this->m_acc_map.at(id)->getBalance())
     throw std::invalid_argument(
         "Withdrawal amount cannot be greater than account's balance");
-  this->m_acc_map.at(id)->m_balance -= amount;
+  this->accountChangeBalance(id, amount);
 }
 
 // loan logic
@@ -102,10 +112,9 @@ void Bank::loanToAccount(size_t id, int amount) {
   if (amount > this->getLiquidity())
     throw std::invalid_argument(
         "Loan amount cannot be greater than the bank's liquidity");
-  Bank::Account *acc = this->m_acc_map.at(id);
-  this->m_liquidity -= amount;
-  acc->m_debt += amount;
-  acc->m_balance += amount;
+  this->changeLiquidity(-amount);
+  this->accountChangeDebt(id, amount);
+  this->depositToAccount(id, amount);
 }
 
 void Bank::payLoanBack(size_t id, int amount) {
@@ -119,9 +128,9 @@ void Bank::payLoanBack(size_t id, int amount) {
     throw std::invalid_argument(
         "Payback cannot be greater than account's balance");
 
-  acc->m_debt -= amount;
-  acc->m_balance -= amount;
-  this->m_liquidity += amount;
+  this->accountChangeDebt(id, -amount);
+  this->accountChangeBalance(id, -amount);
+  this->changeLiquidity(amount);
 }
 
 // operator index access []
