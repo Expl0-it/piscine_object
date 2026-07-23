@@ -13,7 +13,7 @@ private:
   static size_t acc_id;
 
   int m_liquidity;
-  std::map<int, Account *> m_acc_map;
+  std::map<size_t, Account *> m_acc_map;
 
 public:
   Bank();
@@ -27,11 +27,12 @@ public:
   void addLiquidity(int);
 
   int createAccount();
-  void closeAccount(int id);
-  void depositToAccount(int id, int amount);
-  void withdrawFromAccount(int id, int amount);
+  void closeAccount(size_t id);
+  void depositToAccount(size_t id, int amount);
+  void withdrawFromAccount(size_t id, int amount);
 
-  void loanToAccount(int id, int loanAmount);
+  void loanToAccount(size_t id, int amount);
+  void payLoanBack(size_t id, int amount);
 
   const Account &operator[](size_t);
 

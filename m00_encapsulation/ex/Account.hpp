@@ -1,18 +1,21 @@
 #pragma once
 
 #include "Bank.hpp"
+#include <cstddef>
 #include <iostream>
 
 class Bank::Account {
 private:
-  int m_id;
-  int m_value;
+  size_t m_id;
+  int m_balance;
+  int m_debt;
 
-  Account(int id);
+  Account(size_t id);
 
   friend class Bank;
 
 public:
-  const int &getId() const;
-  const int &getValue() const;
+  const size_t &getId() const;
+  const int &getBalance() const;
+  const int &getDebt() const;
 };

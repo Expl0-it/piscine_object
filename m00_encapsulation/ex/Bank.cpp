@@ -1,6 +1,7 @@
 #include "Bank.hpp"
 #include "Account.hpp"
 #include <cstddef>
+#include <cstdlib>
 #include <map>
 #include <stdexcept>
 #include <utility>
@@ -17,14 +18,14 @@ Bank &Bank::operator=(const Bank &other) {
   if (this == &other)
     return (*this);
 
-  for (std::map<int, Bank::Account *>::const_iterator it = m_acc_map.begin();
+  for (std::map<size_t, Bank::Account *>::const_iterator it = m_acc_map.begin();
        it != m_acc_map.end(); it++) {
     delete it->second;
   }
   this->m_acc_map.clear();
 
   this->m_liquidity = other.m_liquidity;
-  for (std::map<int, Bank::Account *>::const_iterator it =
+  for (std::map<size_t, Bank::Account *>::const_iterator it =
            other.m_acc_map.begin();
        it != other.m_acc_map.end(); it++) {
     this->m_acc_map.insert(
@@ -36,7 +37,7 @@ Bank &Bank::operator=(const Bank &other) {
 Bank::Bank(const Bank &other) { *this = other; }
 
 Bank::~Bank() {
-  for (std::map<int, Bank::Account *>::const_iterator it = m_acc_map.begin();
+  for (std::map<size_t, Bank::Account *>::const_iterator it = m_acc_map.begin();
        it != m_acc_map.end(); it++) {
     delete it->second;
   }
@@ -62,24 +63,64 @@ int Bank::createAccount() {
   return (acc_id - 1);
 }
 
-void Bank::closeAccount(int id) {
-  if (this->m_acc_map.at(id)->m_value != 0)
+void Bank::closeAccount(size_t id) {
+  if (this->m_acc_map.at(id)->m_balance != 0)
     throw std::invalid_argument(
         "An account with balance different than zero cannot be closed.");
   this->m_acc_map.erase(id);
 }
 
-void Bank::depositToAccount(int id, int amount) {
+void Bank::depositToAccount(size_t id, int amount) {
   if (amount < 0)
-    throw std::invalid_argument("Amount cannot be lesser than zero.");
+    throw std::invalid_argument("Deposit amount cannot be lesser than zero.");
 
   int fee = 0.05 * amount;
   amount -= fee;
   this->m_liquidity += fee;
-  this->m_acc_map.at(id)->m_value += amount;
+  this->m_acc_map.at(id)->m_balance += amount;
 }
 
-void Bank::withdrawFromAccount(int id, int amount);
+void Bank::withdrawFromAccount(size_t id, int amount) {
+  if (amount < 0)
+    throw std::invalid_argument(
+        "Withdrawal amount cannot be lesser than zero.");
+  if (amount > this->m_acc_map.at(id)->getBalance())
+    throw std::invalid_argument(
+        "Withdrawal amount cannot be greater than account's balance");
+  this->m_acc_map.at(id)->m_balance -= amount;
+}
+
+// loan logic
+
+void Bank::loanToAccount(size_t id, int amount) {
+  if (amount < 0)
+    throw std::invalid_argument("Loan amount cannot be lesser than zero.");
+  if (amount > this->getLiquidity())
+    throw std::invalid_argument(
+        "Loan amount cannot be greater than the bank's liquidity");
+  Account *acc = this->m_acc_map.at(id);
+  this->m_liquidity -= amount;
+  acc->m_debt += amount;
+  acc->m_balance += amount;
+}
+
+void Bank::payLoanBack(size_t id, int amount) {
+  if (amount < 0)
+    throw std::invalid_argument("Payback amount cannot be lesser than zero.");
+  Account *acc = this->m_acc_map.at(id);
+  if (amount > acc->getDebt())
+    throw std::invalid_argument(
+        "Payback cannot be greater than account's debt");
+  if (amount > acc->getBalance())
+    throw std::invalid_argument(
+        "Payback cannot be greater than account's balance");
+
+  acc->m_debt -= amount;
+  acc->m_balance -= amount;
+  this->m_liquidity += amount;
+}
+
+// operator index access []
 
 // ostream override
 
@@ -87,7 +128,7 @@ std::ostream &operator<<(std::ostream &p_os, const Bank &p_bank) {
   p_os << "Bank informations : " << std::endl;
   p_os << "Liquidity : " << p_bank.getLiquidity() << std::endl;
 
-  for (std::map<int, Bank::Account *>::const_iterator it =
+  for (std::map<size_t, Bank::Account *>::const_iterator it =
            p_bank.m_acc_map.begin();
        it != p_bank.m_acc_map.end(); ++it) {
     p_os << *(it->second) << std::endl;
