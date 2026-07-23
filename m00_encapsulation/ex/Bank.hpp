@@ -34,7 +34,7 @@ public:
   void loanToAccount(size_t id, int amount);
   void payLoanBack(size_t id, int amount);
 
-  const Bank::Account &operator[](size_t);
+  const Bank::Account &operator[](size_t) const;
 
   friend std::ostream &operator<<(std::ostream &p_os,
                                   const Bank::Account &p_account);

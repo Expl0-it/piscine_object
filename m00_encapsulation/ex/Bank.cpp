@@ -122,7 +122,9 @@ void Bank::payLoanBack(size_t id, int amount) {
 
 // operator index access []
 
-const Bank::Account &Bank::operator[](size_t) {}
+const Bank::Account &Bank::operator[](size_t id) const {
+  return (*this->m_acc_map.at(id));
+}
 
 // ostream override
 
@@ -130,6 +132,7 @@ std::ostream &operator<<(std::ostream &p_os, const Bank &p_bank) {
   p_os << "Bank informations : " << std::endl;
   p_os << "Liquidity : " << p_bank.getLiquidity() << std::endl;
 
+  p_os << "Accounts: " << std::endl;
   for (std::map<size_t, Bank::Account *>::const_iterator it =
            p_bank.m_acc_map.begin();
        it != p_bank.m_acc_map.end(); ++it) {
