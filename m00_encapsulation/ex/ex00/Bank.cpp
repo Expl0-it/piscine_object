@@ -39,7 +39,8 @@ Bank::Bank(const Bank &other) { *this = other; }
 Bank::~Bank() {
   for (std::map<size_t, Bank::Account *>::const_iterator it = m_acc_map.begin();
        it != m_acc_map.end(); it++) {
-    delete it->second;
+    if (it->second)
+      delete it->second;
   }
   this->m_acc_map.clear();
 }
@@ -67,6 +68,8 @@ void Bank::closeAccount(size_t id) {
   if (this->m_acc_map.at(id)->m_balance != 0)
     throw std::invalid_argument(
         "An account with balance different than zero cannot be closed.");
+  if (this->m_acc_map.at(id))
+    delete this->m_acc_map.at(id);
   this->m_acc_map.erase(id);
 }
 
