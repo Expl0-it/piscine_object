@@ -1,4 +1,6 @@
 #pragma once
+#ifndef ACCOUNT_HPP
+#define ACCOUNT_HPP
 
 #include "Bank.hpp"
 #include <cstddef>
@@ -19,3 +21,5 @@ public:
   const int &getBalance() const;
   const int &getDebt() const;
 };
+
+#endif // ACCOUNT_HPP

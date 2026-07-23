@@ -1,4 +1,6 @@
 #pragma once
+#ifndef BANK_HPP
+#define BANK_HPP
 
 #include <cstddef>
 #include <iostream>
@@ -44,3 +46,5 @@ public:
                                   const Bank::Account &p_account);
   friend std::ostream &operator<<(std::ostream &p_os, const Bank &p_bank);
 };
+
+#endif // BANK_HPP
