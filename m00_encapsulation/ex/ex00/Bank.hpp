@@ -30,7 +30,7 @@ public:
 
   const int &getLiquidity() const;
 
-  int createAccount();
+  size_t createAccount();
   void closeAccount(size_t id);
   void depositToAccount(size_t id, int amount);
   void withdrawFromAccount(size_t id, int amount);

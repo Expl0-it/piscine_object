@@ -64,7 +64,7 @@ void Bank::accountChangeBalance(size_t id, int amount) {
 }
 
 // TODO: check all of this logic when i am feeling more alive than now
-int Bank::createAccount() {
+size_t Bank::createAccount() {
   this->m_acc_map.insert(std::pair<size_t, Bank::Account *>(
       account_id, new Bank::Account(account_id)));
 
@@ -73,14 +73,15 @@ int Bank::createAccount() {
 }
 
 void Bank::closeAccount(size_t id) {
-  if (this->m_acc_map.at(id)->m_balance != 0)
+  Account *acc = this->m_acc_map.at(id);
+  if (acc->getBalance() != 0)
     throw std::invalid_argument(
         "An account with balance different than zero cannot be closed.");
-  if (this->m_acc_map.at(id)->m_debt != 0)
+  if (acc->getDebt() != 0)
     throw std::invalid_argument(
         "An account with debt different than zero cannot be closed");
-  if (this->m_acc_map.at(id))
-    delete this->m_acc_map.at(id);
+  if (acc)
+    delete acc;
   this->m_acc_map.erase(id);
 }
 
@@ -88,7 +89,7 @@ void Bank::depositToAccount(size_t id, int amount) {
   if (amount < 0)
     throw std::invalid_argument("Deposit amount cannot be lesser than zero.");
 
-  int fee = 0.05 * amount;
+  int fee = (5 * amount) / 100;
   amount -= fee;
   this->changeLiquidity(fee);
   this->accountChangeBalance(id, amount);
