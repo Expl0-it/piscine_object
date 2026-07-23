@@ -28,8 +28,8 @@ Bank &Bank::operator=(const Bank &other) {
   for (std::map<size_t, Bank::Account *>::const_iterator it =
            other.m_acc_map.begin();
        it != other.m_acc_map.end(); it++) {
-    this->m_acc_map.insert(
-        std::pair<int, Account *>(it->first, new Account(*(it->second))));
+    this->m_acc_map.insert(std::pair<int, Bank::Account *>(
+        it->first, new Bank::Account(*(it->second))));
   }
   return (*this);
 }
@@ -57,7 +57,7 @@ void Bank::addLiquidity(int toAdd) { m_liquidity += toAdd; }
 // TODO: check all of this logic when i am feeling more alive than now
 int Bank::createAccount() {
   this->m_acc_map.insert(
-      std::pair<int, Account *>(acc_id, new Account(acc_id)));
+      std::pair<int, Bank::Account *>(acc_id, new Bank::Account(acc_id)));
 
   acc_id++;
   return (acc_id - 1);
@@ -98,7 +98,7 @@ void Bank::loanToAccount(size_t id, int amount) {
   if (amount > this->getLiquidity())
     throw std::invalid_argument(
         "Loan amount cannot be greater than the bank's liquidity");
-  Account *acc = this->m_acc_map.at(id);
+  Bank::Account *acc = this->m_acc_map.at(id);
   this->m_liquidity -= amount;
   acc->m_debt += amount;
   acc->m_balance += amount;
@@ -107,7 +107,7 @@ void Bank::loanToAccount(size_t id, int amount) {
 void Bank::payLoanBack(size_t id, int amount) {
   if (amount < 0)
     throw std::invalid_argument("Payback amount cannot be lesser than zero.");
-  Account *acc = this->m_acc_map.at(id);
+  Bank::Account *acc = this->m_acc_map.at(id);
   if (amount > acc->getDebt())
     throw std::invalid_argument(
         "Payback cannot be greater than account's debt");
@@ -121,6 +121,8 @@ void Bank::payLoanBack(size_t id, int amount) {
 }
 
 // operator index access []
+
+const Bank::Account &Bank::operator[](size_t) {}
 
 // ostream override
 

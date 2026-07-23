@@ -13,7 +13,7 @@ private:
   static size_t acc_id;
 
   int m_liquidity;
-  std::map<size_t, Account *> m_acc_map;
+  std::map<size_t, Bank::Account *> m_acc_map;
 
 public:
   Bank();
@@ -34,7 +34,7 @@ public:
   void loanToAccount(size_t id, int amount);
   void payLoanBack(size_t id, int amount);
 
-  const Account &operator[](size_t);
+  const Bank::Account &operator[](size_t);
 
   friend std::ostream &operator<<(std::ostream &p_os,
                                   const Bank::Account &p_account);
